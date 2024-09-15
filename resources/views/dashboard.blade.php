@@ -1,14 +1,9 @@
 <x-app-web-layout>
     @php
-
     $user = App\Models\User::count();
-
     $permission = Spatie\Permission\Models\Permission::count();
-
     $role = Spatie\Permission\Models\Role::count();
-
     $jobs = App\Models\AlumniJobs::count();
-
     @endphp
      
      @role('admin|super-admin')
@@ -41,9 +36,6 @@
      </div>
      @endrole
      
-    
-
-    
     @role('alumni')
     @if(session('status'))
     <script>
@@ -53,54 +45,41 @@
         icon: "success"
         });
     </script>
-    @endif
-        <div class="py-12 bg-blue-50">
-         <div class="max-w-7xl mx-auto bg-white p-10 shadow-lg rounded-lg">
-        <!-- Category Section -->
-        
-        
-        <!-- Job Listings Section -->
-        <div class="bg-red-50 min-h-screen py-12">
-            <div class="max-w-7xl mx-auto px-5 sm:px-6 lg:px-8">
-                <div class="bg-white p-10 shadow-lg rounded-lg">
-                    <div class="mb-8">
-                      
-                        
-                    </div>
+    @endif
+    <div class="py-12 bg-blue-50">
+        <div class="max-w-7xl mx-auto bg-white p-10 shadow-lg rounded-lg">
+            <!-- Job Listings Section -->
+            <div class="bg-red-50 min-h-screen py-12">
+                <div class="max-w-7xl mx-auto px-5 sm:px-6 lg:px-8">
+                    <div class="bg-white p-10 shadow-lg rounded-lg">
+                        <div class="mb-8">
+                        </div>
     
-                    <hr class="my-6 border-red-400">
+                        <hr class="my-6 border-red-400">
     
-                    <div class="grid grid-cols-1 gap-6">
-                        @foreach ($job as $jobs)
-                        <a href="{{ url('job/' . $jobs->id . '/view') }}" class="block p-6 bg-white rounded-lg shadow-md hover:bg-red-50 transition-colors duration-300">
-                            <h5 class="text-2xl font-bold text-red-900">{{ $jobs->job_title }}</h5>
-                            <p class="mt-2 text-gray-700">{{ $jobs->job_description }}</p>
-                            <div class="flex gap-4 mt-4 text-gray-600">
-                                <span class="flex items-center gap-1 text-red-600">
-                                    <i class="fas fa-money-bill-wave"></i> {{ $jobs->job_amount }}
-                                </span>
-                                <span class="flex items-center gap-1 text-red-600">
-                                    <i class="fas fa-map-marker-alt"></i> {{ $jobs->job_location }}
-                                </span>
-                                <span class="flex items-center gap-1 text-red-600">
-                                    <i class="fas fa-clock"></i> {{ $jobs->job_duration }}
-                                </span>
-                            </div>
-                        </a>
-                        @endforeach
+                        <div class="grid grid-cols-1 gap-6">
+                            @foreach (App\Models\AlumniJobs::all() as $jobs)
+                            <a href="{{ url('job/' . $jobs->id . '/view') }}" class="block p-6 bg-white rounded-lg shadow-md hover:bg-red-50 transition-colors duration-300">
+                                <h5 class="text-2xl font-bold text-red-900">{{ $jobs->job_title }}</h5>
+                                <p class="mt-2 text-gray-700">{{ $jobs->job_description }}</p>
+                                <div class="flex gap-4 mt-4 text-gray-600">
+                                    <span class="flex items-center gap-1 text-red-600">
+                                        <i class="fas fa-money-bill-wave"></i> {{ $jobs->job_amount }}
+                                    </span>
+                                    <span class="flex items-center gap-1 text-red-600">
+                                        <i class="fas fa-map-marker-alt"></i> {{ $jobs->job_location }}
+                                    </span>
+                                    <span class="flex items-center gap-1 text-red-600">
+                                        <i class="fas fa-clock"></i> {{ $jobs->job_duration }}
+                                    </span>
+                                </div>
+                            </a>
+                            @endforeach
+                        </div>
                     </div>
                 </div>
-
             </div>
         </div>
-               
-            @else
-                
-            @endif
-        </div>
-
-        <!-- Applied Jobs Section -->
-       
     </div>
-</div>
+    @endrole
 </x-app-web-layout>

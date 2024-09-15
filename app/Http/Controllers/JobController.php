@@ -10,7 +10,9 @@ class JobController extends Controller
     // List all jobs
     public function index()
     {
+        
         $jobs = AlumniJobs::all();
+        // dd($jobs);
         return view('role-permission.jobs.index', compact('jobs'));
     }
 

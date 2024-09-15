@@ -10,7 +10,7 @@ use Spatie\Permission\Models\Role;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 
-class UserController extends Controller
+class UserController extends Controller 
 {   
 
     public function index()
@@ -34,7 +34,7 @@ class UserController extends Controller
         $request->validate([
             "name" => "required|string|max:255",
             "email" => "required|string|email|max:255|unique:users",
-            "password" => "required|string|min:8|confirmed",
+            "password" => "required|string|min:8",
             "roles" => "required|array"
         ]);
 

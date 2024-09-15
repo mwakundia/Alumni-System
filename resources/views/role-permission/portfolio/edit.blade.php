@@ -1,5 +1,4 @@
 <!-- resources/views/portfolio/edit.blade.php -->
-
 @role('alumni')
 <x-partials.alumni-navbar>
 
@@ -76,6 +75,6 @@
         </div>
     </form>
 </div>
-</x-partials.alumni-navbar>
+<x-partials.alumni-navbar>
 @endrole
 

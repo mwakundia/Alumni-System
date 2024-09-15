@@ -15,13 +15,15 @@ use Illuminate\Support\Facades\Hash;
 class PortfolioController extends Controller
 {
     public function index()
-    {
+    {    
+        $userId = Auth::id();
+        $portfolios = Portfolio::where('user_id', $userId)->get();
+
         // Set the timezone to a specific country, e.g., Africa/Nairobi
         $timezone = 'Africa/Nairobi';
         $datetime = new DateTime('now', new DateTimeZone($timezone));
         $currentTime = $datetime->format('H:i:s');
 
-        $portfolios = Portfolio::where('user_id', Auth::id())->get();
         return view('role-permission.portfolio.index', [
             'portfolios' => $portfolios,
             'currentTime' => $currentTime,
@@ -54,118 +56,89 @@ class PortfolioController extends Controller
             'dob' => 'required|date',
             'education' => 'required|string|max:255',
             'certificates' => 'nullable|file|mimes:pdf,doc,docx',
-            'skills' => 'nullable|string',
             'cv' => 'nullable|file|mimes:pdf,doc,docx',
             'description' => 'required|string',
             'profile_picture' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
-        // Handle CV file
-        $cvPath = $portfolio->cv;
-        if ($request->hasFile('cv')) {
-            $cvPath = $request->file('cv')->store('cvs', 'public');
-        }
+        // Handle file uploads
+        $cvPath = $request->hasFile('cv') ? $request->file('cv')->store('cvs', 'public') : $portfolio->cv;
+        $certPath = $request->hasFile('certificates') ? $request->file('certificates')->store('certificates', 'public') : $portfolio->certificates;
+        $profilePicturePath = $request->hasFile('profile_picture') ? $request->file('profile_picture')->store('profile_pictures', 'public') : $portfolio->profile_picture;
 
-        // Handle Certificates file
-        $certPath = $portfolio->certificates;
-        if ($request->hasFile('certificates')) {
-            $certPath = $request->file('certificates')->store('certificates', 'public');
-        }
-
-        // Handle Profile Picture file
-        $profilePicturePath = $portfolio->profile_picture;
-        if ($request->hasFile('profile_picture')) {
-            $profilePicturePath = $request->file('profile_picture')->store('profile_pictures', 'public');
-        }
-
-       $portfolio->update([
+        $portfolio->update([
             'first_name' => $request->first_name,
             'last_name' => $request->last_name,
             'gender' => $request->gender,
             'dob' => $request->dob,
             'education' => $request->education,
             'certificates' => $certPath,
-            'skills' => $request->skills,
             'cv' => $cvPath,
             'description' => $request->description,
             'profile_picture' => $profilePicturePath,
         ]);
 
-        return ($result);
+        return redirect()->route('portfolio.index')->with('status', 'Portfolio updated successfully');
     }
+
 
     public function store(Request $request)
-{
-    $request->validate([
-        'first_name' => 'required|string|max:255',
-        'last_name' => 'required|string|max:255',
-        'gender' => 'string',
-        'dob' => 'date',
-        'education' => 'string|max:255',
-        'certificates' => 'nullable|file|mimes:pdf,doc,docx',
-        'skills' => 'nullable|string',
-        'cv' => 'required|nullable|file|mimes:pdf,doc,docx',
-        'description' => 'required|string',
-        'profile_picture' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-        'password' => 'string|min:3',
-       
-    ]); 
-
-    // Handle CV file
-    if ($request->hasFile('cv')) {
-        $cvPath = $request->file('cv')->store('cvs', 'public');
-    } else {
-        $cvPath = null;
-    }
-
-    // Handle Certificates file
-    if ($request->hasFile('certificates')) {
-        $certPath = $request->file('certificates')->store('certificates', 'public');
-    } else {
-        $certPath = null;
-    }
-
-    // Handle Profile Picture file
-    if ($request->hasFile('profile_picture')) {
-        $profilePicturePath = $request->file('profile_picture')->store('profile_pictures', 'public');
-    } else {
-        $profilePicturePath = null;
-    }
-
-    $email = Auth::user()->email;
-
-    // Create or update portfolio
-    $portfolio = Portfolio::updateOrCreate(
-        ['user_id' => Auth::id()],
-        [
-            'first_name' => $request->first_name,
-            'last_name' => $request->last_name,
-            'gender' => $request->gender,
-            'email' => $email,
-            'dob' => $request->dob,
-            'education' => $request->education,
-            'certificates' => $certPath,
-            'skills' => $request->skills,
-            'cv' => $cvPath,
-            'description' => $request->description,
-            'profile_picture' => $profilePicturePath,   
-        ]
-    );
-
-    if ($request->has('password')) {
-        $portfolio->update(['password' => bcrypt($request->password)]);
-    }   
+    {
+        try {
+            $validatedData = $request->validate([
+                'first_name' => 'required|string|max:255',
+                'last_name' => 'required|string|max:255',
+                'gender' => 'required|string',
+                'dob' => 'required|date',
+                'education' => 'required|string|max:255',
+                'certificates' => 'nullable|file|mimes:pdf,doc,docx',
+                'cv' => 'nullable|file|mimes:pdf,doc,docx',
+                'description' => 'nullable|string', // Changed to nullable
+                'profile_picture' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+                'password' => 'required|string|min:6|confirmed',
+            ]);
     
-
-    // Fetch projects for the logged-in user
-   
-    return redirect('/portfolio');
-
-}
-
+            // Handle file uploads
+            $cvPath = $request->hasFile('cv') ? $request->file('cv')->store('cvs', 'public') : null;
+            $certPath = $request->hasFile('certificates') ? $request->file('certificates')->store('certificates', 'public') : null;
+            $profilePicturePath = $request->hasFile('profile_picture') ? $request->file('profile_picture')->store('profile_pictures', 'public') : null;
+    
+            $user = Auth::user();
+            $user->update([
+                'password' => Hash::make($request->password)
+            ]);
+    
+            // Create or update portfolio
+            $portfolio = Portfolio::updateOrCreate(
+                ['user_id' => Auth::id()],
+                [
+                    'first_name' => $validatedData['first_name'],
+                    'last_name' => $validatedData['last_name'],
+                    'gender' => $validatedData['gender'],
+                    'email' => $user->email,
+                    'dob' => $validatedData['dob'],
+                    'education' => $validatedData['education'],
+                    'certificates' => $certPath,
+                    'cv' => $cvPath,
+                    'description' => $validatedData['description'] ?? '', // Use empty string if null
+                    'profile_picture' => $profilePicturePath,
+                ]
+            );
+    
+            return redirect()->route('portfolio.index')->with('success', 'Portfolio created/updated successfully');
+        } catch (\Exception $e) {
+            // Log the error
+            \Log::error('Portfolio creation failed: ' . $e->getMessage());
+            
+            // Redirect back with error message
+            return redirect()->back()->withInput()->with('error', 'Failed to create portfolio: ' . $e->getMessage());
+        }
+    }
     public function destroy(Portfolio $portfolio)
     {
         $portfolio->delete();
         return redirect()->route('portfolio.index')->with('status', 'Portfolio deleted successfully');
     }
+
+
 }

@@ -1,4 +1,12 @@
 <x-app-web-layout>
+    <div class="">
+        @if ($errors->any())
+        <div>
+            @foreach($errors->all() as $error)
+            <li>{{ $error }}</li>
+            @endforeach
+        </div>
+        @endif
     <div class="flex justify-center text-center pt-10 gap-20">
         <div class="flex-none">
             <h1 class="text-2xl font-bold">Create User</h1>

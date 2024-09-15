@@ -1,5 +1,7 @@
 <!-- resources/views/portfolio/form.blade.php -->
 
+@role('alumni')
+</x-partials.alumni-navbar>
 <div class="mb-4">
     <label for="first_name" class="block text-gray-700">First Name</label>
     <input type="text" name="first_name" class="form-control mt-1 block w-full" value="{{ old('first_name', $portfolio->first_name ?? '') }}">
@@ -45,3 +47,5 @@
         <img src="{{ Storage::url($portfolio->profile_picture) }}" alt="Profile Picture" class="mt-2 w-24 h-24 object-cover rounded-full">
     @endif
 </div>
+</x-partials.alumni-navbar>
+@endrole

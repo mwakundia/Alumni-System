@@ -4,7 +4,7 @@
     <div class="flex-grow">
         <ul class="text-red-500 cursor-pointer font-serif flex gap-8 text-sm mt-2 ml-3">
             <li class="hover:text-gray-400 transition duration-300"> <a href="/dashboard">Find Job</a></li>
-            <li class="hover:text-gray-400 transition duration-300">Your Portfolio</li>
+           <li> <a href="{{url('portfolio')}}"class="hover:text-gray-400 transition duration-300">Portfolio</li></a>
         </ul>
     </div>
 

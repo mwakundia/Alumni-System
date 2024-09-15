@@ -16,7 +16,7 @@
         
         <form action="{{ url('users/'.$user->id) }}" method="POST" class="space-y-6">
         @csrf
-        @method('PUT');
+        @method('PUT')
         
             <div>
                 <label class="block text-gray-700 font-semibold mb-2" for="name">
@@ -32,17 +32,17 @@
                 >
             </div>
             <div>
-                <label class="block text-gray-700 font-semibold mb-2" for="name">
+                <label class="block text-gray-700 font-semibold mb-2" for="email">
                     Email
                 </label>
                 <input 
                     class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" 
-                    placeholder="Name" 
+                    placeholder="Email" 
                     type="text" 
                     readonly
-                    value="{{$user->email}}"
+                    value="{{ $user->email }}"
                     name="email" 
-                    id="name"
+                    id="email"
                 >
             </div>
            

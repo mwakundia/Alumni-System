@@ -1,6 +1,7 @@
 <!-- resources/views/portfolio/show.blade.php -->
-
 @extends('layouts.app')
+@role('alumni')
+</x-partials.alumni-navbar>
 
 @section('content')
 <div class="container mx-auto px-4">
@@ -32,3 +33,6 @@
     <a href="{{ route('portfolio.index') }}" class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600">Back</a>
 </div>
 @endsection
+
+</x-partials.alumni-navbar>
+@endrole
